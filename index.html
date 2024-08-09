@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="text"], 
+        input[type="number"] {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        td button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        td button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Inventory Management</h1>
+    <form id="itemForm">
+        <input type="text" id="itemName" placeholder="Item Name" required>
+        <input type="number" id="itemQuantity" placeholder="Quantity" required>
+        <button type="submit">Add Item</button>
+    </form>
+    <table id="inventoryTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script>
+        class Item {
+            constructor(id, name, quantity) {
+                this.id = id;
+                this.name = name;
+                this.quantity = quantity;
+            }
+        }
+
+        class Inventory {
+            constructor() {
+                this.items = [];
+                this.nextId = 1;
+            }
+
+            addItem(name, quantity) {
+                const item = new Item(this.nextId++, name, quantity);
+                this.items.push(item);
+                return item;
+            }
+
+            deleteItem(id) {
+                this.items = this.items.filter(item => item.id !== id);
+            }
+
+            getItems() {
+                return this.items;
+            }
+        }
+
+        const inventory = new Inventory();
+
+        document.getElementById('itemForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('itemName').value;
+            const quantity = document.getElementById('itemQuantity').value;
+
+            const item = inventory.addItem(name, quantity);
+            addItemToTable(item);
+            document.getElementById('itemForm').reset();
+        });
+
+        function addItemToTable(item) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td><button onclick="deleteItem(${item.id})">Delete</button></td>
+            `;
+            document.querySelector('#inventoryTable tbody').appendChild(row);
+        }
+
+        function deleteItem(id) {
+            inventory.deleteItem(id);
+            document.querySelector('#inventoryTable tbody').innerHTML = '';
+            inventory.getItems().forEach(addItemToTable);
+        }
+    </script>
+</body>
+</html>
+
